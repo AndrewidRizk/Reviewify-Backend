@@ -2,3 +2,4 @@ Flask==2.2.2
 Flask-cors
 requests
 cohere==5.1.1
+Werkzeug==2.2.2
