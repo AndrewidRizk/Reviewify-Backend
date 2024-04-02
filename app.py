@@ -17,9 +17,7 @@ def process_data():
     # Print the data to the console
     print("Data from Form:", data)
 
-    # You can also log it to a file if needed
-    with open("data.log", "a") as f:
-        f.write(str(data) + "\n")
+
 
     # Perform further processing if needed
     # Example: Extracting specific fields from the data
