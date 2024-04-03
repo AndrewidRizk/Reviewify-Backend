@@ -60,22 +60,41 @@
     
     <div id="activity">
         <!-- Backend activity will be displayed here -->
+        {% for message in messages %} <!-- Reverse the order of messages -->
+            <div class="log">{{ message }}</div>
+        {% endfor %}
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
     <script>
-        const socket = io();
-
-        // Function to handle incoming messages
-        function handleMessage(message) {
-            const logElement = document.createElement('div');
-            logElement.classList.add('log');
-            logElement.textContent = message;
-            document.getElementById('activity').prepend(logElement);
+        // Function to fetch backend activity and update UI
+        async function fetchBackendActivity() {
+            const response = await fetch('/stream'); // Endpoint to stream messages
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let partialMessage = '';
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                partialMessage += chunk;
+                if (partialMessage.includes('\n')) {
+                    const messages = partialMessage.split('\n');
+                    partialMessage = messages.pop();
+                    messages.forEach(message => {
+                        if (message.trim()) {
+                            // Create a new log element and prepend it to the activity container
+                            const logElement = document.createElement('div');
+                            logElement.classList.add('log');
+                            logElement.textContent = message.trim();
+                            document.getElementById('activity').prepend(logElement);
+                        }
+                    });
+                }
+            }
         }
 
-        // Listen for 'message' events from the server
-        socket.on('message', handleMessage);
+        // Fetch backend activity on page load
+        fetchBackendActivity();
     </script>
 </body>
 </html>
