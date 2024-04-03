@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request, render_template, Response
 from flask_cors import CORS
-from blinker import signal
 from places import main_get_total_reviews
 from cohere_api import classify_reviews, summarize_reviews
+import threading
+import time
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -12,20 +13,22 @@ messages.append(message)
 message = "✅ Back end Active"
 messages.append(message)
 
-# Create a signal for new messages
-new_message_signal = signal('new-message')
+# Function to continuously check for new messages and push them to the client
+def push_messages_to_client():
+    global messages
+    while True:
+        time.sleep(1)  # Adjust sleep time as needed
+        if len(messages) > 0:
+            yield f"{messages.pop(0)}\n\n"  # Send the first message from the list to the client
+
+# Start a separate thread to continuously push messages to the client
+@app.route('/stream')
+def stream():
+    return Response(push_messages_to_client(), content_type='text/event-stream')
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/stream')
-def stream():
-    def generate_messages():
-        for message in messages:
-            yield f"data: {message}\n\n"
-    
-    return Response(generate_messages(), content_type='text/event-stream')
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
@@ -67,16 +70,8 @@ def process_data():
     # Return processed data
     message = "📨 Sending the information back"
     messages.append(message)
-    
-    # Emit a signal for the new message
-    new_message_signal.send(message)
-    
     return jsonify(response_data)
 
-# Handler for the new message signal
-def handle_new_message(sender, message):
-    global messages
-    messages.append(message)
-
-# Connect the signal handler
-new_message_signal.connect(handle_new_message)
+if __name__ == "__main__":
+    threading.Thread(target=push_messages_to_client).start()  # Start the thread for pushing messages
+    app.run(debug=True)
