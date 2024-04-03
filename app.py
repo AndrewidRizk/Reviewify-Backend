@@ -17,7 +17,7 @@ def index():
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    message = f"{current_time} |🔌 - Attempting to Connect to the Backend"
+    message = f"{current_time} | 🔌 - Attempting to Connect to the Backend"
     messages.append(message)
     data = request.json  # Access JSON data sent from the form
     restaurant = data.get('restaurant', '')  # getting the restaurant name
