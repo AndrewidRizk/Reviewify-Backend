@@ -1,10 +1,13 @@
-from flask import Flask, jsonify, request, render_template, Response
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 from places import main_get_total_reviews
 from cohere_api import classify_reviews, summarize_reviews
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+socketio = SocketIO(app)
+
 messages = []
 message = "🛜 Listening on port /flask/process_data"
 messages.append(message)
@@ -15,12 +18,9 @@ messages.append(message)
 def index():
     return render_template('index.html')
 
-@app.route('/stream')
-def stream():
-    def generate_messages():
-        for message in messages:
-            yield f"{message}\n\n"
-    return Response(generate_messages(), content_type='text/event-stream')
+@socketio.on('connect')
+def handle_connect():
+    emit('messages_update', messages)
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
@@ -62,4 +62,5 @@ def process_data():
     # Return processed data
     message = "📨 Sending the information back"
     messages.append(message)
+    emit('messages_update', messages, broadcast=True)
     return jsonify(response_data)
