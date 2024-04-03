@@ -24,8 +24,6 @@ def generate_messages():
             if not messages:
                 yield ""
 
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -77,6 +75,3 @@ def process_data():
     message = "📨 Sending the information back"
     messages.append(message)
     return jsonify(response_data)
-
-if __name__ == '__main__':
-    app.run(debug=True)
