@@ -1,31 +1,46 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
 from places import main_get_total_reviews
 from cohere_api import classify_reviews, summarize_reviews
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
-socketio = SocketIO(app)  # Initialize Flask-SocketIO
 messages = []
-message = "🛜 Listening on port /flask/process_data"
+message = "🛜 listening on port /flask/process_data"
 messages.append(message)
 message = "✅ Back end Active"
 messages.append(message)
+import time
+
+def generate_messages():
+    global messages
+    while True:
+        if messages:
+            yield f"{messages.pop()}\n\n"
+        else:
+            # Add a short delay to avoid busy looping
+            time.sleep(1)
+            # Check for messages again after the delay
+            if not messages:
+                yield ""
+
+
 
 @app.route('/')
 def index():
-    return render_template('index.html', messages=messages)
+    return render_template('index.html')
 
-@socketio.on('message')
-def handle_message(message):
-    messages.append(message)
-    emit('update', message, broadcast=True)
+
+@app.route('/stream')
+def stream():
+    return Response(generate_messages(), content_type='text/event-stream')
+
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
+    global messages
     message = "🔌 Attempting to Connect to the Backend"
-    socketio.emit('update', message, broadcast=True)
+    messages.append(message)
     data = request.json  # Access JSON data sent from the form
     # Perform further processing if needed
     # Example: Extracting specific fields from the data
@@ -33,22 +48,22 @@ def process_data():
     postal = data.get('postal', '')  # getting the restaurant postal code
     if restaurant and postal:
         message = f"📬 Receiving Restaurant name: {restaurant} and Postal code: {postal}"
-        socketio.emit('update', message, broadcast=True)
+        messages.append(message)
 
     reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
     message = "💻 Retrieving all Review "
-    socketio.emit('update', message, broadcast=True)
+    messages.append(message)
     # Calling the cohere functions
     # returning the classified results inputting the reviews and getting positive, negative, and unrelated
     classified_result, pos, neg, unrel = classify_reviews(reviews_from_places)
     # summarize the code
     message = "📝 Summarizing the Reviews"
-    socketio.emit('update', message, broadcast=True)
+    messages.append(message)
     try:
         summary = summarize_reviews(classified_result)
-    except Exception as e:
+    except Exception  as e :
         message = f"❌ Error: {e}"
-        socketio.emit('update', message, broadcast=True)
+        messages.append(message)
     # Calculate percentages
     positive = (pos / 5) * 100
     negative = (neg / 5) * 100
@@ -60,8 +75,8 @@ def process_data():
     }
     # Return processed data
     message = "📨 Sending the information back"
-    socketio.emit('update', message, broadcast=True)
+    messages.append(message)
     return jsonify(response_data)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
