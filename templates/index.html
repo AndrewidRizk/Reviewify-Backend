@@ -60,6 +60,8 @@
     
     <div id="activity">
         <!-- Backend activity will be displayed here -->
+        <div class="log">🛜 listening on port /flask/process_data</div>
+        <div class="log">✅ Back end Active</div>
         {% for message in messages %} <!-- Reverse the order of messages -->
             <div class="log">{{ message }}</div>
         {% endfor %}

@@ -6,10 +6,7 @@ from cohere_api import classify_reviews, summarize_reviews
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 messages = []  # Global variable to store messages
-message = "🛜 listening on port /flask/process_data"
-messages.append(message)
-message = "✅ Back end Active"
-messages.append(message)
+
 
 @app.route('/')
 def index():
@@ -58,7 +55,7 @@ def process_data():
 def stream():
     def generate():
         for message in messages:
-            yield f"{messages.pop()}\n\n"
+            yield f"{messages.pop(0)}\n\n"
     return Response(generate(), content_type='text/event-stream')
 
 

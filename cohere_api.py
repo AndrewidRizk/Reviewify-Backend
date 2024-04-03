@@ -29,7 +29,7 @@ def classify_reviews(inputs):
     inputs=inputs,
     examples=examples,
   )
-  print(type(response))
+  
   # Extract classifications from the response
   # Extract classifications from the response
   classifications = response.classifications
