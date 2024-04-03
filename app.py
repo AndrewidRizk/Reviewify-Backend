@@ -17,32 +17,32 @@ def index():
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    message = f"🔌 {current_time} - Attempting to Connect to the Backend"
+    message = f"{current_time} |🔌 - Attempting to Connect to the Backend"
     messages.append(message)
     data = request.json  # Access JSON data sent from the form
     restaurant = data.get('restaurant', '')  # getting the restaurant name
     postal = data.get('postal', '')  # getting the restaurant postal code
     if restaurant and postal:
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
-        message = f"📬 {current_time} - Receiving Restaurant name: {restaurant} and Postal code: {postal}"
+        message = f"{current_time} | 📬 - Receiving Restaurant name: {restaurant} and Postal code: {postal}"
         messages.append(message)
 
     reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    message = f"💻 {current_time} - Retrieving all Review "
+    message = f"{current_time} | 💻 - Retrieving all Review "
     messages.append(message)
     # Calling the cohere functions
     # returning the classified results inputting the reviews and getting positive, negative, and unrelated
     classified_result, pos, neg, unrel = classify_reviews(reviews_from_places)
     # summarize the code
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    message = f"📝 {current_time} - Summarizing the Reviews"
+    message = f"{current_time} | 📝 - Summarizing the Reviews"
     messages.append(message)
     try:
         summary = summarize_reviews(classified_result)
     except Exception as e:
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
-        message = f"❌ {current_time} - Error: {e}"
+        message = f"{current_time} | ❌ - Error: {e}"
         messages.append(message)
     # Calculate percentages
     positive = (pos / 5) * 100
@@ -55,7 +55,7 @@ def process_data():
     }
     # Return processed data
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    message = f"📨 {current_time} -  Sending the information back"
+    message = f"{current_time} | 📨 - Sending the information back"
     messages.append(message)
     return jsonify(response_data)
 
