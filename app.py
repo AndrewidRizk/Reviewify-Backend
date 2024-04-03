@@ -23,7 +23,7 @@ def generate_messages():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', messages=messages)
 
 
 @app.route('/stream')
