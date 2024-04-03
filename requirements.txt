@@ -3,3 +3,5 @@ Flask-cors
 requests
 cohere==5.1.1
 Werkzeug==2.2.2
+flask-socketio==5.1.1
+eventlet==0.31.1  # Or gevent==21.8.0
