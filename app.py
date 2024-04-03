@@ -6,33 +6,22 @@ from cohere_api import classify_reviews, summarize_reviews
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 messages = []
-message = "🛜 listening on port /flask/process_data"
+message = "🛜 Listening on port /flask/process_data"
 messages.append(message)
 message = "✅ Back end Active"
 messages.append(message)
-import time
-
-def generate_messages():
-    global messages
-    while True:
-        if messages:
-            yield f"{messages.pop()}\n\n"
-        else:
-            # Add a short delay to avoid busy looping
-            time.sleep(1)
-            # Check for messages again after the delay
-            if not messages:
-                yield ""
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/stream')
 def stream():
+    def generate_messages():
+        for message in messages:
+            yield f"data: {message}\n\n"
+    
     return Response(generate_messages(), content_type='text/event-stream')
-
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
@@ -59,7 +48,7 @@ def process_data():
     messages.append(message)
     try:
         summary = summarize_reviews(classified_result)
-    except Exception  as e :
+    except Exception as e:
         message = f"❌ Error: {e}"
         messages.append(message)
     # Calculate percentages
