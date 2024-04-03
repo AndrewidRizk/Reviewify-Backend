@@ -19,7 +19,7 @@ def index():
 def stream():
     def generate_messages():
         for message in messages:
-            yield f"data: {message}\n\n"
+            yield f"{message}\n\n"
     return Response(generate_messages(), content_type='text/event-stream')
 
 @app.route('/flask/process_data', methods=['POST'])
