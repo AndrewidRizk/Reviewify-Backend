@@ -4,26 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backend Activity</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, rgb(115, 255, 0) 50%, hotpink 95%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .Title {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        #activity {
+            background-color: darkgray;
+            padding: 10px;
+            height: 40vh;
+            max-height: 80vh; /* Max height set to 80% of viewport height */
+            overflow-y: scroll; /* Enable vertical scroll if content overflows */
+            width: 80%;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow-x: hidden;
+        }
+        .log {
+            background-color: lightgray;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            animation: slideInRight 1s ease forwards; /* Animation applied to each log */
+            opacity: 0; /* Start with opacity 0 */
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0; /* Start with opacity 0 */
+                transform: translateX(20%); /* Start off-screen to the right */
+            }
+            to {
+                opacity: 1; /* End with opacity 1 */
+                transform: translateX(0); /* Slide in to the left */
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Backend Activity</h1>
+    <h1 class="Title">Reviewify-Backend Activity</h1>
     
     <div id="activity">
         <!-- Backend activity will be displayed here -->
+        {% for message in messages %} <!-- Reverse the order of messages -->
+            <div class="log">{{ message }}</div>
+        {% endfor %}
     </div>
 
     <script>
+        // Function to fetch backend activity and update UI
         async function fetchBackendActivity() {
-            const responseData = await fetch('/flask/process_data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+            const response = await fetch('/stream'); // Endpoint to stream messages
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let partialMessage = '';
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                partialMessage += chunk;
+                if (partialMessage.includes('\n')) {
+                    const messages = partialMessage.split('\n');
+                    partialMessage = messages.pop();
+                    messages.forEach(message => {
+                        if (message.trim()) {
+                            // Create a new log element and prepend it to the activity container
+                            const logElement = document.createElement('div');
+                            logElement.classList.add('log');
+                            logElement.textContent = message.trim();
+                            document.getElementById('activity').prepend(logElement);
+                        }
+                    });
                 }
-            }).then(response => response.json());
-            document.getElementById('activity').innerHTML = `
-                <p>Result Status: ${responseData.resultStatus}</p>
-                <p>Message: ${JSON.stringify(responseData.message)}</p>
-            `;
+            }
         }
 
         // Fetch backend activity on page load
