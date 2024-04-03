@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template, Response
 from flask_cors import CORS
+from blinker import signal
 from places import main_get_total_reviews
 from cohere_api import classify_reviews, summarize_reviews
 
@@ -11,6 +12,9 @@ messages.append(message)
 message = "✅ Back end Active"
 messages.append(message)
 
+# Create a signal for new messages
+new_message_signal = signal('new-message')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -19,7 +23,8 @@ def index():
 def stream():
     def generate_messages():
         for message in messages:
-            yield f"{message}\n\n"
+            yield f"data: {message}\n\n"
+    
     return Response(generate_messages(), content_type='text/event-stream')
 
 @app.route('/flask/process_data', methods=['POST'])
@@ -62,4 +67,16 @@ def process_data():
     # Return processed data
     message = "📨 Sending the information back"
     messages.append(message)
+    
+    # Emit a signal for the new message
+    new_message_signal.send(message)
+    
     return jsonify(response_data)
+
+# Handler for the new message signal
+def handle_new_message(sender, message):
+    global messages
+    messages.append(message)
+
+# Connect the signal handler
+new_message_signal.connect(handle_new_message)
