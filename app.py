@@ -10,7 +10,7 @@ message = "🛜 listening on port /flask/process_data"
 messages.append(message)
 message = "✅ Back end Active"
 messages.append(message)
-
+import time
 
 def generate_messages():
     global messages
@@ -18,7 +18,12 @@ def generate_messages():
         if messages:
             yield f"{messages.pop()}\n\n"
         else:
-            yield ""
+            # Add a short delay to avoid busy looping
+            time.sleep(1)
+            # Check for messages again after the delay
+            if not messages:
+                yield ""
+
 
 
 @app.route('/')
