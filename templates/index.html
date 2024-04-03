@@ -40,6 +40,18 @@
             padding: 5px;
             margin-bottom: 5px;
             border-radius: 3px;
+            animation: slideInRight 1s ease forwards; /* Animation applied to each log */
+            opacity: 0; /* Start with opacity 0 */
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0; /* Start with opacity 0 */
+                transform: translateX(20%); /* Start off-screen to the right */
+            }
+            to {
+                opacity: 1; /* End with opacity 1 */
+                transform: translateX(0); /* Slide in to the left */
+            }
         }
     </style>
 </head>
@@ -81,8 +93,8 @@
             }
         }
 
-        // Fetch backend activity on page load
-        fetchBackendActivity();
+        // Fetch backend activity periodically
+        setInterval(fetchBackendActivity, 1000); // Fetch every second
     </script>
 </body>
 </html>
