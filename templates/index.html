@@ -40,18 +40,6 @@
             padding: 5px;
             margin-bottom: 5px;
             border-radius: 3px;
-            animation: slideInRight 1s ease forwards; /* Animation applied to each log */
-            opacity: 0; /* Start with opacity 0 */
-        }
-        @keyframes slideInRight {
-            from {
-                opacity: 0; /* Start with opacity 0 */
-                transform: translateX(20%); /* Start off-screen to the right */
-            }
-            to {
-                opacity: 1; /* End with opacity 1 */
-                transform: translateX(0); /* Slide in to the left */
-            }
         }
     </style>
 </head>
@@ -60,11 +48,13 @@
     
     <div id="activity">
         <!-- Backend activity will be displayed here -->
+        {% for message in messages %} <!-- Reverse the order of messages -->
+            <div class="log">{{ message }}</div>
+        {% endfor %}
     </div>
 
     <script>
-        let lastMessage = '';
-
+        // Function to fetch backend activity and update UI
         async function fetchBackendActivity() {
             const response = await fetch('/stream'); // Endpoint to stream messages
             const reader = response.body.getReader();
@@ -89,17 +79,10 @@
                     });
                 }
             }
-            lastMessage = partialMessage.trim();
         }
 
-        // Fetch backend activity only when there are new messages
-        async function updateActivity() {
-            await fetchBackendActivity();
-            setTimeout(updateActivity, 1000); // Fetch updates every 1 second
-        }
-
-        // Call updateActivity function on page load
-        updateActivity();
+        // Fetch backend activity on page load
+        fetchBackendActivity();
     </script>
 </body>
 </html>
