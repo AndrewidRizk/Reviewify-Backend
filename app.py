@@ -8,6 +8,13 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 messages = []  # Global variable to store messages
 
+@app.route('/stream')
+def stream():
+    def generate():
+        for message in messages:
+            yield f"{messages.pop(0)}\n\n"
+    return Response(generate(), content_type='text/event-stream')
+
 
 @app.route('/')
 def index():
@@ -60,11 +67,5 @@ def process_data():
     return jsonify(response_data)
 
 
-@app.route('/stream')
-def stream():
-    def generate():
-        for message in messages:
-            yield f"{messages.pop(0)}\n\n"
-    return Response(generate(), content_type='text/event-stream')
 
 
