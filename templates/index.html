@@ -70,7 +70,7 @@
 
     <script>
         let lastMessageTime = null;
-
+        
         // Function to fetch backend activity and update UI
         async function fetchBackendActivity() {
             const response = await fetch('/stream'); // Endpoint to stream messages
@@ -97,6 +97,7 @@
                                 logElement.textContent = timeWithoutMilliseconds + ' | ' + messageParts[1]; // Display time without milliseconds
                                 document.getElementById('activity').prepend(logElement);
                                 lastMessageTime = messageTime;
+                                setTimeout(fetchBackendActivity, 200);
                             }
                         }
                     });
