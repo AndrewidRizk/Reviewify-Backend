@@ -24,13 +24,13 @@ def process_data():
     restaurant = data.get('restaurant', '')  # getting the restaurant name
     postal = data.get('postal', '')  # getting the restaurant postal code
     if restaurant and postal:
-        time.sleep(1)
+        time.sleep(0.5)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         message = f"{current_time} | 📬 - Receiving Restaurant name: {restaurant} and Postal code: {postal}"
         messages.append(message)
 
     reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
-    time.sleep(1)
+    time.sleep(0.5)
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     message = f"{current_time} | 💻 - Retrieving all Review "
     messages.append(message)
@@ -38,14 +38,14 @@ def process_data():
     # returning the classified results inputting the reviews and getting positive, negative, and unrelated
     classified_result, pos, neg, unrel = classify_reviews(reviews_from_places)
     # summarize the code
-    time.sleep(1)
+    time.sleep(0.5)
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     message = f"{current_time} | 📝 - Summarizing the Reviews"
     messages.append(message)
     try:
         summary = summarize_reviews(classified_result)
     except Exception as e:
-        time.sleep(1)
+        time.sleep(0.5)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         message = f"{current_time} | ❌ - Error: {e}"
         messages.append(message)
