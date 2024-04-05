@@ -97,7 +97,7 @@
                                 logElement.textContent = timeWithoutMilliseconds + ' | ' + messageParts[1]; // Display time without milliseconds
                                 document.getElementById('activity').prepend(logElement);
                                 lastMessageTime = messageTime;
-                                setTimeout(fetchBackendActivity, 200);
+                                setTimeout(fetchBackendActivity, 600);
                             }
                         }
                     });
