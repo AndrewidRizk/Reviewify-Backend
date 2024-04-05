@@ -17,7 +17,7 @@ def index():
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
-    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
     message = f"{current_time} | 🔌 - Attempting to Connect to the Backend"
     messages.append(message)
     data = request.json  # Access JSON data sent from the form
@@ -25,13 +25,13 @@ def process_data():
     postal = data.get('postal', '')  # getting the restaurant postal code
     if restaurant and postal:
         
-        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
         message = f"{current_time} | 📬 - Receiving Restaurant name: {restaurant} and Postal code: {postal}"
         messages.append(message)
 
     reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
     
-    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
     message = f"{current_time} | 💻 - Retrieving all Review "
     messages.append(message)
     # Calling the cohere functions
@@ -39,14 +39,14 @@ def process_data():
     classified_result, pos, neg, unrel = classify_reviews(reviews_from_places)
     # summarize the code
     
-    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
     message = f"{current_time} | 📝 - Summarizing the Reviews"
     messages.append(message)
     try:
         summary = summarize_reviews(classified_result)
     except Exception as e:
         
-        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
         message = f"{current_time} | ❌ - Error: {e}"
         messages.append(message)
     # Calculate percentages
@@ -60,7 +60,7 @@ def process_data():
     }
     # Return processed data
     time.sleep(0.1)
-    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-6]
+    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
     message = f"{current_time} | 📨 - Sending the information back"
     messages.append(message)
     return jsonify(response_data)
