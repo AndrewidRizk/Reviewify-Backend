@@ -13,9 +13,7 @@ messages = []  # Global variable to store messages
 @app.route('/')
 def index():
     return render_template('index.html')  # Pass messages to the template
-def generate():
-        for message in messages:
-            yield f"{message}\n\n"
+
 
 @app.route('/flask/process_data', methods=['POST'])
 def process_data():
@@ -70,7 +68,9 @@ def process_data():
 
 @app.route('/stream')
 def stream():
-    
+    def generate():
+        for message in messages:
+            yield f"{message}\n\n"
     return Response(generate(), content_type='text/event-stream')
 
 
