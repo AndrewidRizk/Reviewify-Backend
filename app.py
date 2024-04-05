@@ -64,7 +64,7 @@ def process_data():
 def stream():
     def generate():
         for message in messages:
-            yield f"{messages.pop(0)}\n\n"
+            yield f"{message}\n\n"
     return Response(generate(), content_type='text/event-stream')
 
 

@@ -69,6 +69,8 @@
     </div>
 
     <script>
+        let lastMessageTime = null;
+
         // Function to fetch backend activity and update UI
         async function fetchBackendActivity() {
             const response = await fetch('/stream'); // Endpoint to stream messages
@@ -85,11 +87,17 @@
                     partialMessage = messages.pop();
                     messages.forEach(message => {
                         if (message.trim()) {
-                            // Create a new log element and prepend it to the activity container
-                            const logElement = document.createElement('div');
-                            logElement.classList.add('log');
-                            logElement.textContent = message.trim();
-                            document.getElementById('activity').prepend(logElement);
+                            const messageParts = message.split(' | ');
+                            const messageTime = new Date(`01/01/1970 ${messageParts[0]}`);
+                            const messageContent = messageParts[1].trim();
+                            if (!lastMessageTime || messageTime > lastMessageTime) {
+                                // Create a new log element and prepend it to the activity container
+                                const logElement = document.createElement('div');
+                                logElement.classList.add('log');
+                                logElement.textContent = messageContent;
+                                document.getElementById('activity').prepend(logElement);
+                                lastMessageTime = messageTime;
+                            }
                         }
                     });
                 }
@@ -97,7 +105,7 @@
         }
 
         // Fetch backend activity periodically
-        setInterval(fetchBackendActivity, 350); // Fetch every second
+        setInterval(fetchBackendActivity, 500); // Fetch every half second
     </script>
 </body>
 </html>
