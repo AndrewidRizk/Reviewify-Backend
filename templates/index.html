@@ -86,23 +86,23 @@
                     const messages = partialMessage.split('\n');
                     partialMessage = messages.pop();
                     messages.forEach(message => {
-                    if (message.trim()) {
-                        const messageParts = message.split(' | ');
-                        const messageTime = new Date(`01/01/1970 ${messageParts[0]}`);
-                        const timeWithoutMilliseconds = messageParts[0].split('.')[0]; // Extracting time without milliseconds
-                        if (!lastMessageTime || messageTime > lastMessageTime) {
-                            // Create a new log element and prepend it to the activity container
-                            const logElement = document.createElement('div');
-                            logElement.classList.add('log');
-                            logElement.textContent = timeWithoutMilliseconds + ' | ' + messageParts[1]; // Display time without milliseconds
-                            document.getElementById('activity').prepend(logElement);
-                            lastMessageTime = messageTime;
+                        if (message.trim()) {
+                            const messageParts = message.split(' | ');
+                            const messageTime = new Date(`01/01/1970 ${messageParts[0]}`);
+                            const timeWithoutMilliseconds = messageParts[0].split('.')[0]; // Extracting time without milliseconds
+                            if (!lastMessageTime || messageTime > lastMessageTime) {
+                                // Create a new log element and prepend it to the activity container
+                                const logElement = document.createElement('div');
+                                logElement.classList.add('log');
+                                logElement.textContent = timeWithoutMilliseconds + ' | ' + messageParts[1]; // Display time without milliseconds
+                                document.getElementById('activity').prepend(logElement);
+                                lastMessageTime = messageTime;
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
-    }
 
         // Fetch backend activity periodically
         setInterval(fetchBackendActivity, 500); // Fetch every half second
