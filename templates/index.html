@@ -90,7 +90,7 @@
                             const messageParts = message.split(' | ');
                             const messageTime = new Date(`01/01/1970 ${messageParts[0]}`);
                             const messageContent = messageParts[1].trim();
-                            if (!lastMessageTime || messageTime > lastMessageTime) {
+                            if (!lastMessageTime || messageTime >= lastMessageTime) {
                                 // Create a new log element and prepend it to the activity container
                                 const logElement = document.createElement('div');
                                 logElement.classList.add('log');
