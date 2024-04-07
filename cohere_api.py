@@ -87,7 +87,7 @@ def summarize_reviews(classified_reviews):
       model="command", 
       temperature=0.9
     )
-    positive_summary = positive_response.text.split('\n', 1)[0]
+    positive_summary = positive_response
   if len(negative_text) == len(prompt):
     negative_summary = "No Negative Reviews"
   else:
@@ -96,7 +96,7 @@ def summarize_reviews(classified_reviews):
       model="command", 
       temperature=0.9
     )
-    negative_summary = negative_response.text.split('\n', 1)[0]
+    negative_summary = negative_response
 
 
   return [positive_summary, negative_summary]
