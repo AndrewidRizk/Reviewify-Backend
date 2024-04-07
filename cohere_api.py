@@ -79,7 +79,7 @@ def summarize_reviews(classified_reviews):
         negative_text += negative_text + "\n" + i[0]
 
   if len(positive_text) == len(prompt):
-    positive_response = "No Positive Reviews"
+    positive_summary = "No Positive Reviews"
   else:
   #Summarize reviews and present it in an informative tone using coheres chat function
     positive_response = co.chat(
@@ -87,18 +87,16 @@ def summarize_reviews(classified_reviews):
       model="command", 
       temperature=0.9
     )
+    positive_summary = positive_response.text.split('\n', 1)[0]
   if len(negative_text) == len(prompt):
-    negative_response = "No Negative Reviews"
+    negative_summary = "No Negative Reviews"
   else:
     negative_response = co.chat(
       message=negative_text, 
       model="command", 
       temperature=0.9
     )
-
-  #Split the test by the '\n' character, since the last line of the chat response is irrelevant information
-  positive_summary = positive_response.text.split('\n', 1)
-  negative_summary = negative_response.text.split('\n', 1)
+    negative_summary = negative_response.text.split('\n', 1)[0]
 
 
-  return [positive_summary[0], negative_summary[0]]
+  return [positive_summary, negative_summary]
