@@ -28,6 +28,7 @@ def classify_reviews(inputs):
   response = co.classify(
     inputs=inputs,
     examples=examples,
+    prompt_truncation='AUTO'
   )
   
   # Extract classifications from the response
@@ -86,7 +87,8 @@ def summarize_reviews(classified_reviews):
     positive_response = co.chat(
       message=positive_text, 
       model="command", 
-      temperature=0.9
+      temperature=0.9,
+      prompt_truncation='AUTO'
     )
     positive_summary = positive_response.text.split('\n', 1)[0]
 
@@ -94,7 +96,8 @@ def summarize_reviews(classified_reviews):
     negative_response = co.chat(
       message=negative_text, 
       model="command", 
-      temperature=0.9
+      temperature=0.9,
+      prompt_truncation='AUTO'
     )
     negative_summary = negative_response.text.split('\n', 1)[0]
   #Split the test by the '\n' character, since the last line of the chat response is irrelevant information
