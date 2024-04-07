@@ -61,8 +61,9 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  positive_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
-  negative_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  prompt = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  positive_text = prompt
+  negative_text = prompt
 
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
@@ -77,21 +78,27 @@ def summarize_reviews(classified_reviews):
       else:
         negative_text += negative_text + "\n" + i[0]
 
-  #Summarize reviews and present it in an informative tone using coheres chat function
-  positive_response = co.chat(
-	  message=positive_text, 
-	  model="command", 
-	  temperature=0.9
-  )
 
-  negative_response = co.chat(
-	  message=negative_text, 
-	  model="command", 
-	  temperature=0.9
-  )
+  positive_summary = "No Positive Reviews"
+  negative_summary = "No Negative Reviews"
 
+  if len(positive_text) != len(prompt):
+    positive_response = co.chat(
+      message=positive_text, 
+      model="command", 
+      temperature=0.9
+    )
+    positive_summary = positive_response.text.split('\n', 1)[0]
+
+  if len(negative_text) != len(prompt):
+    negative_response = co.chat(
+      message=negative_text, 
+      model="command", 
+      temperature=0.9
+    )
+    negative_summary = negative_response.text.split('\n', 1)[0]
   #Split the test by the '\n' character, since the last line of the chat response is irrelevant information
-  positive_summary = positive_response.text.split('\n', 1)
-  negative_summary = negative_response.text.split('\n', 1)
+  
 
-  return [positive_summary[0], negative_summary[0]]
+
+  return [positive_summary, negative_summary]
