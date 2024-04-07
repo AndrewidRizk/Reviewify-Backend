@@ -61,15 +61,21 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  positive_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone: "
-  negative_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone: "
+  positive_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc): "
+  negative_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc): "
 
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
     if (i[1] == 'positive'):
-      positive_text += positive_text + " " + i[0]
+      if len(i[0]) > 420:
+         positive_text += positive_text + " " + i[0][:420]
+      else:
+        positive_text += positive_text + " " + i[0]
     elif (i[1] == 'negative'):
-      negative_text += negative_text + " " + i[0]
+      if len(i[0]) > 420:
+         negative_text += negative_text + " " + i[0][:420]
+      else:
+        negative_text += negative_text + " " + i[0]
 
   #Summarize reviews and present it in an informative tone using coheres chat function
   positive_response = co.chat(
