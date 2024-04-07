@@ -61,8 +61,8 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  positive_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc). If no reviews provided after the ':' just say 'no reviews': "
-  negative_text = "Summarize the following to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc). If no reviews provided after the ':' just say 'no reviews': "
+  positive_text = "Summarize the following reviews after the ':' to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc). If no reviews provided just say 'no reviews': "
+  negative_text = "Summarize the following reviews after the ':' to 2-3 sentences in an informative fashion, in third person, and with a general tone (don't mention names), picking key words that peopple like (Quality, Quanity, service, etc). If no reviews provided just say 'no reviews': "
 
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
