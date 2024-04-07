@@ -61,7 +61,7 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  prompt = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  prompt = "Summarize the following reviews to 2-3 sentences in an informative fashion, selecting key aspects that people used such as quality, quantity, service, etc., while maintaining a neutral third-person tone:\n "
   positive_text = prompt
   negative_text = prompt
 
@@ -89,7 +89,7 @@ def summarize_reviews(classified_reviews):
       temperature=0.9,
       prompt_truncation='AUTO'
     )
-    positive_summary = positive_response.text.split('\n', 1)[0]
+    positive_summary = positive_response.text
 
   if len(negative_text) != len(prompt):
     negative_response = co.chat(
@@ -98,7 +98,7 @@ def summarize_reviews(classified_reviews):
       temperature=0.9,
       prompt_truncation='AUTO'
     )
-    negative_summary = negative_response.text.split('\n', 1)[0]
+    negative_summary = negative_response.text
   #Split the test by the '\n' character, since the last line of the chat response is irrelevant information
   
 
