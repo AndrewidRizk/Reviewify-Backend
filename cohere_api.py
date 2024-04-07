@@ -61,7 +61,7 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  prompt = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  prompt = "Summarize the following reviews into concise, informative passages, selecting key aspects such as quality, quantity, service, etc., while maintaining a neutral third-person tone. Craft summaries that highlight the most appreciated aspects of the reviews, capturing the essence of customer sentiment:\n "
   positive_text = prompt
   negative_text = prompt
 
