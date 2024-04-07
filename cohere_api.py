@@ -68,13 +68,13 @@ def summarize_reviews(classified_reviews):
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
     if (i[1] == 'positive'):
-      if len(i[0]) > 400:
-         positive_text += positive_text + "\n" + i[0][:400]
+      if len(i[0]) > 300:
+         positive_text += positive_text + "\n" + i[0][:300]
       else:
         positive_text += positive_text + "\n" + i[0]
     elif (i[1] == 'negative'):
-      if len(i[0]) > 400:
-         negative_text += negative_text + "\n" + i[0][:400]
+      if len(i[0]) > 300:
+         negative_text += negative_text + "\n" + i[0][:300]
       else:
         negative_text += negative_text + "\n" + i[0]
 
