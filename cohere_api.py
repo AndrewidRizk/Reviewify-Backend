@@ -61,19 +61,19 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  positive_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, in third person, and with a general tone, picking key words that peopple like (Quality, Quanity, service, etc).:\n "
-  negative_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, in third person, and with a general tone, picking key words that peopple like (Quality, Quanity, service, etc).:\n "
+  positive_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  negative_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
 
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
     if (i[1] == 'positive'):
       if len(i[0]) > 420:
-         positive_text += positive_text + "\n" + i[0][:400]
+         positive_text += positive_text + "\n" + i[0][:420]
       else:
         positive_text += positive_text + "\n" + i[0]
     elif (i[1] == 'negative'):
       if len(i[0]) > 420:
-         negative_text += negative_text + "\n" + i[0][:400]
+         negative_text += negative_text + "\n" + i[0][:420]
       else:
         negative_text += negative_text + "\n" + i[0]
 
