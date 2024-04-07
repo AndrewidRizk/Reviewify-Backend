@@ -61,9 +61,8 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  promp = "Summarize the following reviews into concise, informative passages, selecting key aspects such as quality, quantity, service, etc., while maintaining a neutral third-person tone:\n"
-  positive_text = promp
-  negative_text = promp
+  positive_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
+  negative_text = "Summarize the following reviews to 2-3 sentences in an informative fashion, picking key words that peopple like (Quality, Quanity, service, etc), in third person, and with a general tone:\n "
 
   #Concatenate positive and negative reviews to their respective strings
   for i in classified_reviews:
