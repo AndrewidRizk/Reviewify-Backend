@@ -61,42 +61,33 @@ def classify_reviews(inputs):
   return classified_result, positive, negative, unrelated
 
 def summarize_reviews(classified_reviews):
-  prompt = "Summarize the following reviews into concise, informative passages, selecting key aspects such as quality, quantity, service, etc., while maintaining a neutral third-person tone. Craft summaries that highlight the most appreciated aspects of the reviews:\n "
-  positive_text = prompt
-  negative_text = prompt
+    prompt = "Summarize the following reviews into concise, informative passages, selecting key aspects such as quality, quantity, service, etc., while maintaining a neutral third-person tone:\n"
+    positive_text = []
+    negative_text = []
 
-  #Concatenate positive and negative reviews to their respective strings
-  for i in classified_reviews:
-    if (i[1] == 'positive'):
-      if len(i[0]) > 420:
-         positive_text += positive_text + "\n" + i[0][:420]
-      else:
-        positive_text += positive_text + "\n" + i[0]
-    elif (i[1] == 'negative'):
-      if len(i[0]) > 420:
-         negative_text += negative_text + "\n" + i[0][:420]
-      else:
-        negative_text += negative_text + "\n" + i[0]
+    for review, sentiment in classified_reviews:
+        if sentiment == 'positive':
+            positive_text.append(review[:420])  # Limit to first 420 characters
+        elif sentiment == 'negative':
+            negative_text.append(review[:420])  # Limit to first 420 characters
 
-  if len(positive_text) == len(prompt):
     positive_summary = "No Positive Reviews"
-  else:
-  #Summarize reviews and present it in an informative tone using coheres chat function
-    positive_response = co.chat(
-      message=positive_text, 
-      model="command", 
-      temperature=0.9
-    )
-    positive_summary = positive_response
-  if len(negative_text) == len(prompt):
     negative_summary = "No Negative Reviews"
-  else:
-    negative_response = co.chat(
-      message=negative_text, 
-      model="command", 
-      temperature=0.9
-    )
-    negative_summary = negative_response
 
+    if positive_text:
+        positive_response = co.chat(
+            message=prompt + '\n'.join(positive_text),
+            model="command",
+            temperature=0.9
+        )
+        positive_summary = positive_response
 
-  return [positive_summary, negative_summary]
+    if negative_text:
+        negative_response = co.chat(
+            message=prompt + '\n'.join(negative_text),
+            model="command",
+            temperature=0.9
+        )
+        negative_summary = negative_response
+
+    return [positive_summary, negative_summary]
