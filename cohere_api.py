@@ -28,7 +28,6 @@ def classify_reviews(inputs):
   response = co.classify(
     inputs=inputs,
     examples=examples,
-    prompt_truncation='AUTO'
   )
   
   # Extract classifications from the response
