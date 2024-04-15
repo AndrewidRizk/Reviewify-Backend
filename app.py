@@ -28,12 +28,23 @@ def process_data():
         current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
         message = f"{current_time} | 📬 - Receiving Business name: {restaurant} and Postal code: {postal}"
         messages.append(message)
-
-    reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
+    try:
+        reviews_from_places = main_get_total_reviews(restaurant_name=restaurant, postal_code=postal)  # getting all the reviews
+    except Exception as e:
+        
+        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        message = f"{current_time} | ❌ - Error: {e}"
+        messages.append(message)  
     time.sleep(0.1)
-    current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
-    message = f"{current_time} | 💻 - Retrieving all Review "
-    messages.append(message)
+    try:
+        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        message = f"{current_time} | 💻 - Retrieving all Review "
+        messages.append(message)
+    except Exception as e:
+        
+        current_time = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        message = f"{current_time} | ❌ - Error: {e}"
+        messages.append(message)  
     # Calling the cohere functions
     # returning the classified results inputting the reviews and getting positive, negative, and unrelated
     classified_result, pos, neg, unrel = classify_reviews(reviews_from_places)
