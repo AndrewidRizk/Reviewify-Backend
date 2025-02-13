@@ -15,8 +15,7 @@ class Restaurant:
     def __str__(self):
         return f"Name: {self.name}\nPostal Code: {self.postal_code}\nLocation: {self.location}"
     
-
-API_KEY = "AIzaSyA9rPJHMiSNpa_9F5R1FgF_IQrdXoY5VLE"
+API_KEY = os.getenv("api_key_Y2")  # Correct way
 
 def get_reviews(restaurant):
     place_id = get_place_id(restaurant.name, restaurant.location)
