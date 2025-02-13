@@ -16,10 +16,11 @@ class Restaurant:
         return f"Name: {self.name}\nPostal Code: {self.postal_code}\nLocation: {self.location}"
     
 
-API_KEY = os.environ.get('api_key_Y2')
+API_KEY = "AIzaSyA9rPJHMiSNpa_9F5R1FgF_IQrdXoY5VLE"
 
 def get_reviews(restaurant):
     place_id = get_place_id(restaurant.name, restaurant.location)
+    print(place_id)
 
     if place_id:
         reviews = get_reviews_text_by_place_id(place_id)
@@ -49,21 +50,34 @@ def get_reviews_text_by_place_id(place_id):
     else:
         return None
 
+  
 
 def get_location_from_postal_code(postal_code, api_key):
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
-        "address": f"{postal_code}, Canada",
+        "address": postal_code,
+        "region": "ca",
         "key": api_key,
     }
-    response = requests.get(base_url, params=params)
-    data = response.json()
 
-    if response.status_code == 200 and data.get("results"):
-        formatted_address = data["results"][0]["formatted_address"]
-        return formatted_address
-    else:
-        return f"Location not found for postal code {postal_code}"
+    try:
+        response = requests.get(base_url, params=params)
+        
+        # Print the response status and content for debugging 
+        
+        if response.status_code != 200:
+            return f"❌ API Error: {response.text}"
+
+        data = response.json()  # This line might be failing if the response is empty
+        
+        if "results" in data and data["results"]:
+            return data["results"][0].get("formatted_address", "Unknown Address")
+        else:
+            return f"⚠️ No location found for postal code: {postal_code}"
+
+    except requests.exceptions.RequestException as e:
+        return f"🚨 Request failed: {e}"
+
 
 def main_get_total_reviews(restaurant_name, postal_code):
     #Input: Name of the restaurant and postal code

@@ -1,9 +1,14 @@
 import cohere
 from cohere import ClassifyExample
-co = cohere.Client("fjykocFMg6C8cig1iRFmUokDM0dlKBYNA4KZKToy") #ADD KEY HERE
+co = cohere.Client("xzSGl0nhLN0AVqKtcR6sYqILTspHLs8rKhi6TT16") #ADD KEY HERE
 
 def classify_reviews(inputs):
-  examples=[
+    """
+    Classifies a list of review texts using a fine-tuned Cohere classification model.
+    """
+    model_id = "6af236f1-ca3d-4509-b1ae-4055dc1cb275-ft"  # Fine-tuned model ID
+    
+    examples=[
     #Positive reviews
     ClassifyExample(text="I loved this restaurant. Nicest McDonald's location that I've been too. The store was very busy both at the drive thru and the inside. Plenty of seating inside, either downstairs or upstairs. I liked the view from the upstairs dining portion. The selection and freshness of the baked goods here was excellent. In the New York stores there isn't as much of baked good selections.", label="positive"), 
     ClassifyExample(text="Tried the new Chicken Big Mac. Really good. Maybe even better than the regular Big Mac. I got it hot off the grill, and they didn't skimp on the Special Sauce. Wish they would do a vegetarian option, though. Just replace the patties with old school veggie burgers (not those new lab-grown varieties).", label="positive"),
@@ -24,83 +29,91 @@ def classify_reviews(inputs):
     ClassifyExample(text="The waitstaff was friendly, but the chairs were actually disguised robots. One of them tried to tell me a knock-knock joke. It's a restaurant, not a comedy club. Points for unexpected entertainment.",label= "unrelated"),
   ]
 
-  #Categorize reviews using cohere classify method
-  response = co.classify(
-    inputs=inputs,
-    examples=examples,
-  )
-  
-  # Extract classifications from the response
-  # Extract classifications from the response
-  classifications = response.classifications
+    try:
+      
+        response = co.classify(
+            model=model_id,
+            inputs=inputs,
+            examples=examples
+        )
+        print(response)
 
-  # Initialize counts
-  positive = 0
-  negative = 0
-  unrelated = 0
+        # Extract classifications
+        classified_result = []
+        positive = 0
+        negative = 0
+        unrelated = 0
 
-  # Initialize an empty list to store classified results
-  classified_result = []
+        for item in response.classifications:
+            # Fix: Extract the highest confidence prediction
+            prediction = item.predictions[0] if item.predictions else "unknown"
+            confidence = item.confidences[0] if item.confidences else 0.0
 
-  # Iterate through each item in the classifications
-  for item in classifications:
-      # Assuming each item is a dictionary-like object
-      prediction = item.prediction
+            # Increment category counters
+            if prediction == "positive":
+                positive += 1
+            elif prediction == "negative":
+                negative += 1
+            elif prediction == "unrelated":
+                unrelated += 1
 
-      # Increment counts based on the prediction
-      if prediction == 'positive':
-          positive += 1
-      elif prediction == 'negative':
-          negative += 1
-      elif prediction == 'unrelated':
-          unrelated += 1
+            # Append the result with confidence score
+            classified_result.append({"text": item.input, "label": prediction, "confidence": confidence})
 
-      # Append the text and label of the item to classified_result
-      classified_result.append([item.input, prediction])
+        return classified_result, positive, negative, unrelated
 
-  return classified_result, positive, negative, unrelated
+    except Exception as e:
+        print(f"❌ Error classifying reviews: {e}")
+        return [], 0, 0, 0  # Return empty results if an error occurs
 
 def summarize_reviews(classified_reviews):
-  prompt = "Summarize the following reviews to 2-3 sentences in an informative fashion, selecting key aspects that people used such as quality, quantity, service, etc., while maintaining a neutral third-person tone:\n "
-  positive_text = prompt
-  negative_text = prompt
+    """
+    Summarizes classified reviews into concise positive and negative summaries.
+    """
+    prompt = "YOUR JOB IS ONLY TO SUMMARIZE, Just Summarize the following reviews into 2-3 sentences, focusing on quality, service, and customer experience while maintaining a neutral tone:\n"
+    
+    positive_text = prompt
+    negative_text = prompt
+    has_positive = False
+    has_negative = False
 
-  #Concatenate positive and negative reviews to their respective strings
-  for i in classified_reviews:
-    if (i[1] == 'positive'):
-      if len(i[0]) > 300:
-         positive_text += positive_text + "\n" + i[0][:300]
-      else:
-        positive_text += positive_text + "\n" + i[0]
-    elif (i[1] == 'negative'):
-      if len(i[0]) > 300:
-         negative_text += negative_text + "\n" + i[0][:300]
-      else:
-        negative_text += negative_text + "\n" + i[0]
+    # Concatenate positive and negative reviews
+    for review in classified_reviews:
+        review_text = review["text"]
+        review_label = review["label"]
 
+        if review_label == "positive":
+            has_positive = True
+            positive_text += "\n- " + (review_text[:300] if len(review_text) > 300 else review_text)
+        elif review_label == "negative":
+            has_negative = True
+            negative_text += "\n- " + (review_text[:300] if len(review_text) > 300 else review_text)
 
-  positive_summary = "No Positive Reviews"
-  negative_summary = "No Negative Reviews"
+    # Ensure we don’t exceed token limits
+    positive_text = positive_text[:4096]  # Trim to avoid API token overload
+    negative_text = negative_text[:4096]
 
-  if len(positive_text) != len(prompt):
-    positive_response = co.chat(
-      message=positive_text, 
-      model="command", 
-      temperature=0.9,
-      prompt_truncation='AUTO'
-    )
-    positive_summary = positive_response.text
+    positive_summary = "No Positive Reviews"
+    negative_summary = "No Negative Reviews"
 
-  if len(negative_text) != len(prompt):
-    negative_response = co.chat(
-      message=negative_text, 
-      model="command", 
-      temperature=0.9,
-      prompt_truncation='AUTO'
-    )
-    negative_summary = negative_response.text
-  #Split the test by the '\n' character, since the last line of the chat response is irrelevant information
-  
+    try:
+        if has_positive:  # Only call API if we actually have positive reviews
+            response = co.chat(
+                message=positive_text,
+                model="command",
+                temperature=0.7
+            )
+            positive_summary = response.text
 
+        if has_negative:  # FIXED: Ensures negative reviews are summarized
+            response = co.chat(
+                message=negative_text,
+                model="command",
+                temperature=0.7
+            )
+            negative_summary = response.text  # Ensure the API result is assigned
 
-  return [positive_summary, negative_summary]
+    except Exception as e:
+        print(f"❌ Error summarizing reviews: {e}")
+
+    return [positive_summary, negative_summary]
